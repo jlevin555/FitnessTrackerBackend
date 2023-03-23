@@ -12,7 +12,7 @@ async function createRoutine({ creatorId, isPublic, name, goal }) {
       console.log('Finished adding new routine')
       return routine;
   } catch(error) {
-    console.log('Error creating new routine')
+    console.error('Error creating new routine')
     throw error;
   }
 }
@@ -24,13 +24,13 @@ async function getRoutineById(id) {
 async function getRoutinesWithoutActivities() {
   try {
     console.log("Getting all routines")
-    const { rows: [ routines ] } = await client.query(`
+    const { rows } = await client.query(`
     SELECT *
     FROM routines;
     `);
 
     console.log("Found all routines")
-    return routines;
+    return rows;
   } catch (error) {
     console.log("Error getting routines")
     throw error;

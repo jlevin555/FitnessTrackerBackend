@@ -14,11 +14,14 @@ async function dropTables() {
   console.log("Dropping All Tables...")
   // drop all tables, in the correct order
     client.query(`
-      DROP TABLE IF EXISTS mytablename;
+      DROP TABLE IF EXISTS users;
+      DROP TABLE IF EXISTS activities;
+      DROP TABLE IF EXISTS routines;
+      DROP TABLE IF EXISTS routine_activities;
     `);
-    console.log('Finished dropping tables!');
+    console.log("Finished dropping tables!");
   } catch(error) {
-    console.error('Error while dropping tables!');
+    console.error("Error while dropping tables!");
     throw error;
   }
 }
@@ -28,15 +31,35 @@ async function createTables() {
   console.log("Starting to build tables...")
   // create all tables, in the correct order
   await client.query(`
-    CREATE TABLE mytablename(
+    CREATE TABLE users(
       id SERIAL PRIMARY KEY,
-      username varchar(255) NOT NULL,
+      username varchar(255) UNIQUE NOT NULL,
       password varchar(255) NOT NULL
     );
+    CREATE TABLE activities(
+      id SERIAL PRIMARY KEY,
+      username varchar(255) UNIQUE NOT NULL,
+      password TEXT NOT NULL
+    );
+    CREATE TABLE routines(
+      id SERIAL PRIMARY KEY,
+      "createId" INTEGER REFERENCES users(id),
+      "isPublic" BOOLEAN DEFAULT false,
+      name varchar(255) UNIQUE NOT NULL,
+      goal TEXT NOT NULL
+    );
+    CREATE TABLE routine_activities(
+      id SERIAL PRIMARY KEY,
+      "routineId" INTEGER REFERENCES routines(id),
+      "activityId" INTEGER REFERENCES activities(id),
+      UNIQUE ("routineId", "activityId")
+      duration INTEGER,
+      count INTEGER
+    );
   `);
-  console.log('Finished building tables!');
+  console.log("Finished building tables!");
   } catch(error) {
-    console.error('Error building tables!');
+    console.error("Error building tables!");
     throw error;
   }
 }
