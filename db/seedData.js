@@ -14,10 +14,10 @@ async function dropTables() {
   console.log("Dropping All Tables...")
   // drop all tables, in the correct order
     client.query(`
-      DROP TABLE IF EXISTS users;
-      DROP TABLE IF EXISTS activities;
-      DROP TABLE IF EXISTS routines;
-      DROP TABLE IF EXISTS routine_activities;
+      DROP TABLE IF EXISTS users CASCADE;
+      DROP TABLE IF EXISTS activities CASCADE;
+      DROP TABLE IF EXISTS routines CASCADE;
+      DROP TABLE IF EXISTS routine_activities CASCADE;
     `);
     console.log("Finished dropping tables!");
   } catch(error) {
@@ -33,28 +33,28 @@ async function createTables() {
   await client.query(`
     CREATE TABLE users(
       id SERIAL PRIMARY KEY,
-      username varchar(255) UNIQUE NOT NULL,
-      password varchar(255) NOT NULL
+      username VARCHAR(255) UNIQUE NOT NULL,
+      password VARCHAR(255) NOT NULL
     );
     CREATE TABLE activities(
       id SERIAL PRIMARY KEY,
-      username varchar(255) UNIQUE NOT NULL,
-      password TEXT NOT NULL
+      name VARCHAR(255) UNIQUE NOT NULL,
+      description TEXT NOT NULL
     );
     CREATE TABLE routines(
       id SERIAL PRIMARY KEY,
-      "createId" INTEGER REFERENCES users(id),
+      "creatorId" INTEGER REFERENCES users(id),
       "isPublic" BOOLEAN DEFAULT false,
-      name varchar(255) UNIQUE NOT NULL,
+      name VARCHAR(255) UNIQUE NOT NULL,
       goal TEXT NOT NULL
     );
     CREATE TABLE routine_activities(
       id SERIAL PRIMARY KEY,
       "routineId" INTEGER REFERENCES routines(id),
       "activityId" INTEGER REFERENCES activities(id),
-      UNIQUE ("routineId", "activityId")
       duration INTEGER,
-      count INTEGER
+      count INTEGER,
+      UNIQUE ("routineId", "activityId")
     );
   `);
   console.log("Finished building tables!");

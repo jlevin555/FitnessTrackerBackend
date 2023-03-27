@@ -11,7 +11,7 @@ async function createUser({ username, password }) {
       ON CONFLICT (username) DO NOTHING
       RETURNING *;
       `, [username, password]);
-
+      console.log("Created user!", user);
       return user;
   } catch(error) {
     console.error('Error creating user')
@@ -34,7 +34,7 @@ async function getUser({ username, password }) {
 
     delete user.password;
 
-    console.log('Found user', user)  
+    console.log('Found user!', user)  
     return user;
   } catch(error) {
     console.error('Error finding user')
@@ -51,7 +51,7 @@ async function getUserById(userId) {
       WHERE userId=$1;
     `, [ userId ]);
 
-    console.log('Found user')
+    console.log('Found user!')
     return user;
   } catch(error) {
     console.error('Error finding user')
@@ -65,10 +65,10 @@ async function getUserByUsername(userName) {
     const { rows: [ user ] } = await client.query(`
       SELECT *
       FROM users
-      WHERE userName=$1;
+      WHERE username=$1;
     `, [ userName ]);
 
-    console.log('Found user')
+    console.log('Found user!')
     return user;
   } catch(error) {
     console.error('Error finding user')
