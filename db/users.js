@@ -1,4 +1,3 @@
-//import { hash } from "bcrypt";
 const client = require("./client");
 const { compare, hash } = require('bcrypt');
 

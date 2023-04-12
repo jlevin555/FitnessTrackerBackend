@@ -119,7 +119,7 @@ usersRouter.get('/:username/routines', async (req, res, next) => {
 
 	try {
 		const publicRoutines = await getPublicRoutinesByUser({ username });
-		const allRoutines = await getAllRoutinesByUser({ username })
+		
 
 		if (publicRoutines) {
 			res.send(publicRoutines);
@@ -136,7 +136,6 @@ usersRouter.get('/:username/allroutines', async (req, res, next) => {
 	const { username } = req.params;
 
 	try {
-		const publicRoutines = await getPublicRoutinesByUser({ username });
 		const allRoutines = await getAllRoutinesByUser({ username })
 
 		if (allRoutines) {

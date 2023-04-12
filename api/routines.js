@@ -8,7 +8,6 @@ const {
 	getRoutineById
 } = require('../db/routines');
 const { addActivityToRoutine, getRoutineActivitiesByRoutine } = require('../db/routine_activities');
-const { getActivityById } = require('../db/activities');
 const { requireUser } = require('./require');
 const { getUserById } = require('../db/users');
 
@@ -73,73 +72,58 @@ routinesRouter.patch('/:routineId', requireUser, async (req, res, next) => {
 });
 
 routinesRouter.delete('/:routineId', requireUser, async (req, res, next) => {
-	const { routineId } = req.params;
-	const creatorId = req.user.id;
-	const user = await getUserById(creatorId)
-	const routineName = await getRoutineById(routineId)
-
+		
 	try {
-
-		if (user.id !== routineName.creatorId) {
-			next({ 
+		console.log('AAAAA', req.user)
+		const creatorId = req.user.id;
+		const { routineId } = req.params;
+		const routineName = await getRoutineById(routineId)
+		if (req.user.id !== routineName.creatorId) {
+            res.status(403).send({ 
 				error: "Incorrect user",
-				message: `User ${user.username} is not allowed to delete ${routineName.name}`,
+				message: `User ${req.user.username} is not allowed to delete ${routineName.name}`,
 				name: "Error"
 			});
-		}
+		} else {
 
 		const deletedRoutine = await destroyRoutine(routineId);
 		res.send(deletedRoutine);
+		}
 	} catch ({ name, message }) {
 		next({ name, message });
 	}
 });
+
 
 routinesRouter.post('/:routineId/activities', async (req, res, next) => {
-	const { routineId } = req.params;
 	const { activityId, count, duration } = req.body;
-	const existsActivity = await getActivityById(activityId)
-	const existsRoutine = await getRoutineById(routineId)
-	const existsRA = await getRoutineActivitiesByRoutine(existsRoutine)
-	const filteredRA = existsRA.filter(element => element.activityId === activityId)
-
-	if (!activityId || !count || !duration) {
-		res.send({ message: 'Missing fields' });
-	}
-
-	try {
-		const newRoutineActivity = await addActivityToRoutine({
-			routineId,
-			activityId,
-			count,
-			duration
-		});
-
-		if (filteredRA.length) {
-			res.send({
-				error: "String",
+	const { routineId } = req.params;
+	try { 
+  
+	const checkRoutine = await getRoutineById(routineId) 
+	console.log("checkRoutine3", checkRoutine)
+	
+	const routineActivities = await getRoutineActivitiesByRoutine({ id: routineId });
+	console.log("routineActivities", routineActivities);
+  
+	const duplicateActivity = routineActivities.find(activity => activity.activityId === activityId);
+	console.log("duplicateActivity", duplicateActivity);
+  
+	if (duplicateActivity && checkRoutine) {
+		res.send({
+				error: "DuplicateError",
 				message: `Activity ID ${activityId} already exists in Routine ID ${routineId}`,
-				name: "String"
+				name: "CannotAddDuplicateActivity",
 			});
-		}
-
-		// for (let i = 0 ; i <= existsRA.length ; i++) {
-
-		// 	console.log("AAAAAAAAAAAAAAAAAAAAAAA", existsActivity.id, existsRA[i])
-
-		// 	if (existsActivity.id == existsRA[i].activityId) {
-		// 		res.send({
-		// 			error: "String",
-		// 			message: `Activity ID ${activityId} already exists in Routine ID ${routineId}`,
-		// 			name: "String"
-		// 		});
-		// 	}
-		// }
-
-		res.send(newRoutineActivity);
-	} catch ({ name, message }) {
-		next({ name, message });
+	} else{
+  
+	const addedActivity = await addActivityToRoutine({routineId, activityId, count, duration});
+	res.send(addedActivity)
+  
 	}
-});
+	} catch (error) {
+	next (error)
+	}
+  })
 
 module.exports = { routinesRouter };

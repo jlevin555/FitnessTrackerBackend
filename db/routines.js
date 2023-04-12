@@ -238,7 +238,6 @@ async function updateRoutine({ id, ...fields }) {
 
 async function destroyRoutine(id) {
   try {
-    // console.log(`Destroying routine by id ${id}...`)
     
     await client.query(`
       DELETE FROM routine_activities 
