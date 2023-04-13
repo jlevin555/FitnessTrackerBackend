@@ -29,7 +29,6 @@ routinesRouter.post('/', requireUser, async (req, res, next) => {
 		if (creatorId && isPublic && name && goal) {
 			const newRoutine = await createRoutine({
 				creatorId,
-				isPublic,
 				name,
 				goal
 			});
@@ -127,3 +126,13 @@ routinesRouter.post('/:routineId/activities', async (req, res, next) => {
   })
 
 module.exports = { routinesRouter };
+
+routinesRouter.get('/', async(req, res, next) => {
+    try {
+        const publicRoutines = await getAllPublicRoutines();
+        res.send(publicRoutines);
+    } catch({ name, message }) {
+        next({ name, message });
+    }
+});
+

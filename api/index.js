@@ -43,4 +43,12 @@ apiRouter.get('/health', (req, res, next) => {
 	res.send({ message: 'Server is up and running!' });
 });
 
-module.exports = { apiRouter };
+// ROUTER: /api/routines
+
+apiRouter.use('/routines', routinesRouter);
+
+// ROUTER: /api/routine_activities
+
+apiRouter.use('/routine_activities', routineActivitiesRouter);
+
+module.exports = apiRouter;
