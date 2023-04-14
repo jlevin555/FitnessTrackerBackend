@@ -43,6 +43,10 @@ apiRouter.get('/health', (req, res, next) => {
 	res.send({ message: 'Server is up and running!' });
 });
 
+apiRouter.use((req, res, next) => {
+    res.status(404).send('Page Not Found');
+});
+
 // ROUTER: /api/routines
 
 apiRouter.use('/routines', routinesRouter);

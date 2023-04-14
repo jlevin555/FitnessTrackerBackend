@@ -14,9 +14,6 @@ app.use(express.json());
 // app.use(express.urlencoded({ extended: true }));
 app.use('/api', apiRouter);
 
-app.use((req, res, next) => {
-    res.sendStatus(404);
-});
 
 app.use((error, req, res, next) => {
     console.log('Server Log', error);
